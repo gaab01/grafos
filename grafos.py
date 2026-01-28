@@ -1,10 +1,18 @@
 """
 Implementação de Grafos usando NetworkX
 Permite ao usuário inserir vértices e arestas de forma interativa
+
+Limites:
+- Máximo de 10 vértices
+- Máximo de 20 arestas
 """
 
 import networkx as nx
 import matplotlib.pyplot as plt
+
+# Constantes de limite para evitar lentidão na visualização
+MAX_VERTICES = 10
+MAX_ARESTAS = 20
 
 
 def criar_grafo():
@@ -85,7 +93,7 @@ def visualizar_grafo(grafo):
                           node_size=700, alpha=0.9)
     
     # Desenha as arestas
-    nx.draw_networkx_edges(grafo, pos, edge_color='gray', 
+    nx.draw_networkx_edges(grafo, pos, edge_color='black', 
                           width=2, alpha=0.7)
     
     # Desenha os rótulos dos vértices
@@ -125,7 +133,7 @@ def mostrar_informacoes(grafo):
 def menu():
     """Exibe o menu principal"""
     print("\n" + "=" * 50)
-    print("       🔷 SISTEMA DE GRAFOS - NETWORKX 🔷")
+    print("       🔷 SISTEMA DE GRAFOS - W/H/O/🔷")
     print("=" * 50)
     print("  1. Adicionar vértice")
     print("  2. Adicionar aresta")
@@ -143,8 +151,9 @@ def menu():
 def main():
     """Função principal do programa"""
     grafo = criar_grafo()
-    print("\n🎉 Bem-vindo ao Sistema de Grafos com NetworkX!")
+    print("\n🎉 Bem-vindo ao Sistema de Grafos!")
     print("   Desenvolvido em Python para manipulação de grafos.\n")
+    print("   Feito e Otimizado pela equipe Wesley, Heloisa e Ortega.\n")
     
     while True:
         opcao = menu()
