@@ -16,76 +16,89 @@ MAX_ARESTAS = 20
 
 
 def criar_grafo():
-    """Cria um novo grafo vazio"""
+    # Cria e retorna um grafo não direcionado vazio
     return nx.Graph()
 
 
 def adicionar_vertice(grafo, vertice):
-    """Adiciona um vértice ao grafo"""
-    grafo.add_node(vertice)
-    print(f"✓ Vértice '{vertice}' adicionado com sucesso!")
+    # Adiciona um vértice ao grafo, respeitando o limite de 10 vértices
+    if grafo.number_of_nodes() >= 10:
+        print("Limite máximo de 10 vértices atingido.")
+        return
+
+    if vertice in grafo.nodes():
+        print(f"O vértice '{vertice}' já existe.")
+    else:
+        grafo.add_node(vertice)
+        print(f"Vértice '{vertice}' adicionado com sucesso!")
 
 
 def adicionar_aresta(grafo, vertice1, vertice2, peso=None):
-    """Adiciona uma aresta entre dois vértices"""
-    if peso:
+    # Adiciona uma aresta ao grafo, respeitando o limite de 20 arestas
+    if grafo.number_of_edges() >= 20:
+        print("Limite máximo de 20 arestas atingido.")
+        return
+
+    if vertice1 not in grafo.nodes() or vertice2 not in grafo.nodes():
+        print("Ambos os vértices devem existir antes de criar a aresta.")
+        return
+
+    if peso is not None:
         grafo.add_edge(vertice1, vertice2, weight=peso)
-        print(f"✓ Aresta '{vertice1}' <-> '{vertice2}' (peso: {peso}) adicionada com sucesso!")
+        print(f"Aresta '{vertice1}' <-> '{vertice2}' (peso: {peso}) adicionada!")
     else:
         grafo.add_edge(vertice1, vertice2)
-        print(f"✓ Aresta '{vertice1}' <-> '{vertice2}' adicionada com sucesso!")
+        print(f"Aresta '{vertice1}' <-> '{vertice2}' adicionada!")
 
 
 def remover_vertice(grafo, vertice):
-    """Remove um vértice do grafo"""
+    # Remove um vértice do grafo
     if vertice in grafo.nodes():
         grafo.remove_node(vertice)
-        print(f"✓ Vértice '{vertice}' removido com sucesso!")
+        print(f"Vértice '{vertice}' removido com sucesso!")
     else:
-        print(f"✗ Vértice '{vertice}' não encontrado!")
+        print(f"Vértice '{vertice}' não encontrado.")
 
 
 def remover_aresta(grafo, vertice1, vertice2):
-    """Remove uma aresta do grafo"""
+    # Remove uma aresta do grafo
     if grafo.has_edge(vertice1, vertice2):
         grafo.remove_edge(vertice1, vertice2)
-        print(f"✓ Aresta '{vertice1}' <-> '{vertice2}' removida com sucesso!")
+        print(f"Aresta '{vertice1}' <-> '{vertice2}' removida com sucesso!")
     else:
-        print(f"✗ Aresta '{vertice1}' <-> '{vertice2}' não encontrada!")
+        print(f"Aresta '{vertice1}' <-> '{vertice2}' não encontrada.")
 
 
 def listar_vertices(grafo):
-    """Lista todos os vértices do grafo"""
+    # Lista todos os vértices do grafo
     vertices = list(grafo.nodes())
     if vertices:
-        print(f"\n📍 Vértices ({len(vertices)}): {vertices}")
+        print(f"\nVértices ({len(vertices)}): {vertices}")
     else:
-        print("\n⚠ O grafo não possui vértices.")
-    return vertices
+        print("\nO grafo não possui vértices.")
 
 
 def listar_arestas(grafo):
-    """Lista todas as arestas do grafo"""
+    # Lista todas as arestas do grafo
     arestas = list(grafo.edges(data=True))
     if arestas:
-        print(f"\n🔗 Arestas ({len(arestas)}):")
-        for aresta in arestas:
-            if 'weight' in aresta[2]:
-                print(f"   {aresta[0]} <-> {aresta[1]} (peso: {aresta[2]['weight']})")
+        print(f"\nArestas ({len(arestas)}):")
+        for a in arestas:
+            if 'weight' in a[2]:
+                print(f"  {a[0]} <-> {a[1]} (peso: {a[2]['weight']})")
             else:
-                print(f"   {aresta[0]} <-> {aresta[1]}")
+                print(f"  {a[0]} <-> {a[1]}")
     else:
-        print("\n⚠ O grafo não possui arestas.")
-    return arestas
+        print("\nO grafo não possui arestas.")
 
 
 def visualizar_grafo(grafo):
-    """Visualiza o grafo graficamente"""
-    if len(grafo.nodes()) == 0:
-        print("\n⚠ O grafo está vazio. Adicione vértices primeiro!")
+    # Exibe e salva a visualização do grafo
+    if grafo.number_of_nodes() == 0:
+        print("O grafo está vazio.")
         return
-    
-    plt.figure(figsize=(10, 8))
+
+    plt.figure(figsize=(8, 6))
     pos = nx.spring_layout(grafo, seed=42)
     
     # Desenha os nós
@@ -102,32 +115,28 @@ def visualizar_grafo(grafo):
     # Desenha os pesos das arestas (se existirem)
     edge_labels = nx.get_edge_attributes(grafo, 'weight')
     if edge_labels:
-        nx.draw_networkx_edge_labels(grafo, pos, edge_labels, font_size=10)
-    
-    plt.title("Visualização do Grafo", fontsize=14, fontweight='bold')
-    plt.axis('off')
-    plt.tight_layout()
+        nx.draw_networkx_edge_labels(grafo, pos, edge_labels)
+
+    plt.title("Visualização do Grafo")
+    plt.savefig("grafo.png")
     plt.show()
+
+    print("Imagem do grafo salva como 'grafo.png'")
 
 
 def mostrar_informacoes(grafo):
-    """Mostra informações sobre o grafo"""
-    print("\n" + "=" * 50)
-    print("📊 INFORMAÇÕES DO GRAFO")
-    print("=" * 50)
-    print(f"   Número de vértices: {grafo.number_of_nodes()}")
-    print(f"   Número de arestas: {grafo.number_of_edges()}")
-    
+    # Mostra informações gerais do grafo
+    print("\n===INFORMAÇÕES DO GRAFO===")
+    print(f"Número de vértices: {grafo.number_of_nodes()}")
+    print(f"Número de arestas: {grafo.number_of_edges()}")
+
     if grafo.number_of_nodes() > 0:
-        print(f"   Grau dos vértices:")
-        for node in grafo.nodes():
-            print(f"      - {node}: grau {grafo.degree(node)}")
-        
-        if nx.is_connected(grafo) and grafo.number_of_nodes() > 1:
-            print(f"   Grafo é conexo: Sim")
-        elif grafo.number_of_nodes() > 1:
-            print(f"   Grafo é conexo: Não")
-    print("=" * 50)
+        print("Grau dos vértices:")
+        for v in grafo.nodes():
+            print(f"  {v}: grau {grafo.degree(v)}")
+
+        if grafo.number_of_nodes() > 1:
+            print("Grafo conexo:", "Sim" if nx.is_connected(grafo) else "Não")
 
 
 def menu():
@@ -149,7 +158,7 @@ def menu():
 
 
 def main():
-    """Função principal do programa"""
+    # Função principal
     grafo = criar_grafo()
     print("\n🎉 Bem-vindo ao Sistema de Grafos!")
     print("   Desenvolvido em Python para manipulação de grafos.\n")
@@ -157,47 +166,52 @@ def main():
     
     while True:
         opcao = menu()
-        
+
         if opcao == "1":
-            vertice = input("\nDigite o nome do vértice: ")
-            adicionar_vertice(grafo, vertice)
-            
+            v = input("Nome do vértice: ")
+            adicionar_vertice(grafo, v)
+
         elif opcao == "2":
-            v1 = input("\nDigite o primeiro vértice: ")
-            v2 = input("Digite o segundo vértice: ")
-            peso_input = input("Digite o peso da aresta (ou Enter para sem peso): ")
-            peso = float(peso_input) if peso_input else None
-            adicionar_aresta(grafo, v1, v2, peso)
-            
+            v1 = input("Vértice de origem: ")
+            v2 = input("Vértice de destino: ")
+            peso_input = input("Peso da aresta (Enter para nenhum): ")
+
+            try:
+                peso = float(peso_input) if peso_input else None
+                adicionar_aresta(grafo, v1, v2, peso)
+            except ValueError:
+                print("Peso inválido. Digite um número.")
+
         elif opcao == "3":
             listar_vertices(grafo)
-            vertice = input("\nDigite o vértice a remover: ")
-            remover_vertice(grafo, vertice)
-            
+            v = input("Vértice a remover: ")
+            remover_vertice(grafo, v)
+
         elif opcao == "4":
             listar_arestas(grafo)
-            v1 = input("\nDigite o primeiro vértice da aresta: ")
-            v2 = input("Digite o segundo vértice da aresta: ")
+            v1 = input("Primeiro vértice: ")
+            v2 = input("Segundo vértice: ")
             remover_aresta(grafo, v1, v2)
-            
+
         elif opcao == "5":
             listar_vertices(grafo)
-            
+
         elif opcao == "6":
             listar_arestas(grafo)
-            
+
         elif opcao == "7":
             visualizar_grafo(grafo)
-            
+
         elif opcao == "8":
             mostrar_informacoes(grafo)
-            
+
         elif opcao == "0":
-            print("\n👋 Obrigado por usar o Sistema de Grafos! Até logo!\n")
+            print("Encerrando o programa...")
+            print("Obrigado por utilizar nosso código!")
             break
-            
+
         else:
-            print("\n⚠ Opção inválida! Tente novamente.")
+            print("Opção inválida.")
 
 
 if __name__ == "__main__":
