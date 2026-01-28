@@ -137,24 +137,54 @@ def visualizar_grafo(grafo, nome_tipo):
         console.print("[bold red]O grafo está vazio. Adicione vértices primeiro![/bold red]")
         return
 
-    plt.figure(figsize=(8, 6))
-    pos = nx.spring_layout(grafo, seed=42)
+    # Visual mais "premium" e limpo
+    plt.figure(figsize=(10, 7), facecolor='#FAFAFA') # Janela com fundo off-white
+    ax = plt.gca()
+    ax.set_facecolor('#FAFAFA')
     
-    # Desenha
-    nx.draw_networkx_nodes(grafo, pos, node_color='#87CEFA', node_size=800, alpha=0.9)
-    # Usa setas se for direcionado
+    # Layout calculado com mais espaço entre os nós (k=0.5 -> k=2.0 aumenta repulsão)
+    # seed muda a posição inicial, k maior espalha mais
+    pos = nx.spring_layout(grafo, seed=42, k=1.5)
+    
+    # 1. Desenha as arestas primeiro (para ficarem atrás dos nós)
     arrows = grafo.is_directed()
-    nx.draw_networkx_edges(grafo, pos, edge_color='#404040', width=2, alpha=0.7, arrows=arrows)
-    nx.draw_networkx_labels(grafo, pos, font_size=12, font_weight='bold')
+    nx.draw_networkx_edges(grafo, pos, 
+                           edge_color='#555555',     # Cinza escuro suave
+                           width=2.0,                # Linha mais grossa
+                           alpha=0.6,                # Leve transparência
+                           arrows=arrows,
+                           arrowstyle='-|>',         # Seta triangular cheia
+                           arrowsize=25,             # Seta maior
+                           connectionstyle="arc3,rad=0.1") # Curva leve nas arestas ficaria lindo, mas networkx simples não suporta fácil em draw_edges sem iterar. Mantendo reto por compatibilidade.
     
+    # 2. Desenha os nós (Vértices)
+    nx.draw_networkx_nodes(grafo, pos, 
+                           node_color='#4A90E2',     # Azul moderno (Flat UI)
+                           node_size=1200,           # Nó maior
+                           alpha=1.0,
+                           edgecolors='white',       # Borda branca (estilo adesivo)
+                           linewidths=2.5)           # Borda grossa
+    
+    # 3. Desenha os rótulos (Nomes)
+    nx.draw_networkx_labels(grafo, pos, 
+                            font_size=11, 
+                            font_family='sans-serif', # Fonte mais limpa
+                            font_weight='bold',
+                            font_color='white')       # Texto branco para contraste com azul escuro
+    
+    # 4. Pesos das arestas (com fundo branco para leitura)
     edge_labels = nx.get_edge_attributes(grafo, 'weight')
     if edge_labels:
-        nx.draw_networkx_edge_labels(grafo, pos, edge_labels)
+        nx.draw_networkx_edge_labels(grafo, pos, edge_labels,
+                                     font_color='#E74C3C', # Vermelho suave
+                                     font_weight='bold',
+                                     rotate=False,         # Texto sempre horizontal fica mais fácil de ler
+                                     bbox=dict(facecolor='white', edgecolor='none', alpha=0.8, boxstyle='round,pad=0.2'))
 
-    plt.title(f"Visualização: Grafo {nome_tipo}")
+    plt.title(f"Visualização: Grafo {nome_tipo}", fontsize=16, fontweight='bold', color='#333333', pad=20)
     plt.axis('off')
     
-    console.print("[bold blue]Abrindo janela de visualização...[/bold blue]")
+    console.print("[bold blue]Abrindo janela de visualização estilizada...[/bold blue]")
     plt.show()
     console.print("[bold green]Visualização fechada.[/bold green]")
 
