@@ -16,8 +16,17 @@ MAX_ARESTAS = 20
 
 
 def criar_grafo():
-    # Cria e retorna um grafo não direcionado vazio
-    return nx.Graph()
+    # Pergunta ao usuário o tipo de grafo desejado
+    while True:
+        print("\nEscolha o tipo de grafo:")
+        print("1. Não Direcionado (Simples)")
+        print("2. Direcionado (Com setas)")
+        resp = input("Opção: ")
+        if resp == '1':
+            return nx.Graph()
+        elif resp == '2':
+            return nx.DiGraph()
+        print("Opção inválida.")
 
 
 def adicionar_vertice(grafo, vertice):
@@ -118,10 +127,8 @@ def visualizar_grafo(grafo):
         nx.draw_networkx_edge_labels(grafo, pos, edge_labels)
 
     plt.title("Visualização do Grafo")
-    plt.savefig("grafo.png")
+    plt.axis('off')
     plt.show()
-
-    print("Imagem do grafo salva como 'grafo.png'")
 
 
 def mostrar_informacoes(grafo):
@@ -136,7 +143,39 @@ def mostrar_informacoes(grafo):
             print(f"  {v}: grau {grafo.degree(v)}")
 
         if grafo.number_of_nodes() > 1:
-            print("Grafo conexo:", "Sim" if nx.is_connected(grafo) else "Não")
+            # Verifica conectividade (para DiGraph usa is_weakly_connected ou fortemente, simplificando para is_connected se for Graph)
+            if grafo.is_directed():
+                conexo = nx.is_weakly_connected(grafo)
+                tipo = "Fracamente conexo"
+            else:
+                conexo = nx.is_connected(grafo)
+                tipo = "Conexo"
+            print(f"Grafo {tipo}:", "Sim" if conexo else "Não")
+
+
+def calcular_caminho_curto(grafo, origem, destino):
+    # Calcula e exibe o caminho mais curto (Dijkstra)
+    try:
+        caminho = nx.shortest_path(grafo, source=origem, target=destino, weight='weight')
+        custo = nx.shortest_path_length(grafo, source=origem, target=destino, weight='weight')
+        print(f"\nCaminho mais curto de '{origem}' para '{destino}': {caminho}")
+        print(f"Custo total: {custo}")
+    except nx.NetworkXNoPath:
+        print(f"\nNão existe caminho entre '{origem}' e '{destino}'.")
+    except nx.NodeNotFound as e:
+        print(f"\nErro: {e}")
+
+
+def realizar_busca(grafo, inicio):
+    # Realiza uma busca em largura (BFS)
+    if inicio not in grafo:
+        print(f"O vértice '{inicio}' não existe.")
+        return
+    
+    # Retorna uma lista com a ordem de visitação
+    ordem_visita = list(nx.bfs_tree(grafo, source=inicio))
+    print(f"\nBusca em Largura (BFS) a partir de '{inicio}':")
+    print(f"Ordem de visita: {ordem_visita}")
 
 
 def menu():
@@ -152,6 +191,8 @@ def menu():
     print("  6. Listar arestas")
     print("  7. Visualizar grafo")
     print("  8. Informações do grafo")
+    print("  9. Caminho mais curto (Dijkstra)")
+    print("  10. Busca em Largura (BFS)")
     print("  0. Sair")
     print("=" * 50)
     return input("Escolha uma opção: ")
@@ -204,6 +245,18 @@ def main():
 
         elif opcao == "8":
             mostrar_informacoes(grafo)
+
+
+        elif opcao == "9":
+            listar_vertices(grafo)
+            v1 = input("Vértice de origem: ")
+            v2 = input("Vértice de destino: ")
+            calcular_caminho_curto(grafo, v1, v2)
+
+        elif opcao == "10":
+            listar_vertices(grafo)
+            v = input("Vértice inicial da busca: ")
+            realizar_busca(grafo, v)
 
         elif opcao == "0":
             print("Encerrando o programa...")
