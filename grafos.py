@@ -41,8 +41,10 @@ def criar_grafo():
     while True:
         resp = Prompt.ask("\n[bold]Opção[/bold]", choices=["1", "2"], default="1")
         if resp == '1':
+            console.print("\n[bold green]✔ Grafo Não Direcionado criado![/bold green]")
             return nx.Graph(), "Não Direcionado"
         elif resp == '2':
+            console.print("\n[bold green]✔ Grafo Direcionado criado![/bold green]")
             return nx.DiGraph(), "Direcionado"
 
 
@@ -128,7 +130,7 @@ def listar_arestas(grafo):
         print("\nO grafo não possui arestas.")
 
 
-def visualizar_grafo(grafo):
+def visualizar_grafo(grafo, tipo_nome):
     # Exibe e salva a visualização do grafo
     if grafo.number_of_nodes() == 0:
         console.print("[bold red]O grafo está vazio. Adicione vértices primeiro![/bold red]")
@@ -157,7 +159,7 @@ def visualizar_grafo(grafo):
                                      rotate=False,         # Texto sempre horizontal fica mais fácil de ler
                                      bbox=dict(facecolor='white', edgecolor='none', alpha=0.8, boxstyle='round,pad=0.2'))
 
-    plt.title(f"Visualização: Grafo {nome_tipo}", fontsize=16, fontweight='bold', color='#333333', pad=20)
+    plt.title(f"Visualização: Grafo {tipo_nome}", fontsize=16, fontweight='bold', color='#333333', pad=20)
     plt.axis('off')
     
     console.print("[bold blue]Abrindo janela de visualização estilizada...[/bold blue]")
@@ -258,13 +260,13 @@ def menu():
 
 def main():
     # Função principal
-    grafo = criar_grafo()
+    grafo, tipo_nome = criar_grafo()
     print("\n🎉 Bem-vindo ao Sistema de Grafos!")
     print("   Desenvolvido em Python para manipulação de grafos.\n")
     print("   Feito e Otimizado pela equipe Wesley, Heloisa e Ortega.\n")
     
     while True:
-        opcao = menu(tipo_nome)
+        opcao = menu()
 
         if opcao == "0":
             console.print("\n[bold blue]Obrigado por utilizar! Encerrando...[/bold blue]")
@@ -335,4 +337,5 @@ if __name__ == "__main__":
     try:
         main()
     except KeyboardInterrupt:
+        console.print("\n[bold red]Programa interrompido pelo usuário.[/bold red]")
         console.print("\n[bold red]Programa interrompido pelo usuário.[/bold red]")
